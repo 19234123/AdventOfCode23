@@ -5,6 +5,8 @@
 #include <map>
 #include <sstream>
 #include "EnginePart.h"
+#include "Gear.h"
+#include <algorithm>
 
 using std::vector;
 using std::string;
@@ -50,9 +52,40 @@ int main() {
 
     // add valid part values to list
     int valueSum = 0;
-    for (auto& part: EnginePart::partList){
-        if (part.checkIfValid(rawInput)){
-            valueSum += part.value;
+    for (auto& part: EnginePart::partList) {
+        part.getGearCoordinates(rawInput);
+    }
+
+    std::list<string> gearList;
+    int currentGearNeighbour;
+    for (const auto& currentGear: EnginePart::gearCoordinates) {
+        vector<string> gearDataSplit = splitLine(currentGear, '-');
+        string currentGearId = gearDataSplit[0];
+        currentGearNeighbour = std::stoi(gearDataSplit[1]);
+        Gear *currentGearObj = new Gear(std::stoi(currentGearId));
+
+        if (std::find(gearList.begin(), gearList.end(), currentGearId) == gearList.end()){
+            gearList.push_back(currentGearId);
+            currentGearObj->neighbours.push_back(currentGearNeighbour);
+        } else {
+            for (const auto& gear: Gear::gearList){
+                if (gear->id == std::stoi(currentGearId)){
+                    if (std::find(gear->neighbours.begin(), gear->neighbours.end(), currentGearNeighbour) == gear->neighbours.end()) {
+                        gear->neighbours.push_back(currentGearNeighbour);
+                    }
+
+                }
+            }
+        }
+    }
+
+    for (auto& gear: Gear::gearList){
+        if (gear->neighbours.size() == 2){
+            int currentSum = 1;
+            for (const auto& neighbour: gear->neighbours){
+                currentSum *= neighbour;
+            }
+            valueSum += currentSum;
         }
     }
 

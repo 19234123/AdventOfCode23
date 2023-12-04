@@ -7,93 +7,139 @@
 #include "EnginePart.h"
 #include "Gear.h"
 #include <algorithm>
+#include <list>
+#include <chrono>
 
 using std::vector;
+using std::list;
 using std::string;
 using std::cout;
 using std::endl;
 
+std::chrono::system_clock::time_point startTime;
+std::chrono::system_clock::time_point endTime;
+
 string filePath = R"(C:\Dev\Text_files\input.txt)";
 vector<string> readFile();
-vector<string> splitLine(const string& line, const char& delimiter);
+vector<string> splitLineToString(const string& line, const char& delimiter);
+vector<int> splitLineToInt(const string& line, const char& delimiter);
+bool binarySearch(const std::vector<int>& sortedArray, int target);
+void displayTimeTaken();
+vector<int> quickSort(vector<int> numbers);
 string trim(const string& str);
 
 
 int main() {
     vector<string> rawInput = readFile();
+    startTime = std::chrono::high_resolution_clock::now();
 
-    // Create part list
-    int row = 0;
+    int totalScore = 0;
     for (const auto& line: rawInput) {
-        string value;
-        for (int col=0; col<=line.length(); col++){
-            char currentChar = line[col];
 
-            if (col != line.length()) {
-                if (isdigit(currentChar)) {
-                    value += currentChar;
+        vector<string> gameNumbers = splitLineToString(line, ':');
+        vector<string> numbersSplit = splitLineToString(gameNumbers.at(1), '|');
+
+        vector<int> inputNumbers = splitLineToInt(numbersSplit.at(0), ' ');
+        vector<int> validationNumbers = splitLineToInt(numbersSplit.at(1), ' ');
+        validationNumbers = quickSort(validationNumbers);
+
+
+        int roundScore = 0;
+        for (const auto& numberToCheck: inputNumbers){
+            if (binarySearch(validationNumbers, numberToCheck)){
+                if (roundScore == 0){
+                    roundScore = 1;
                 } else {
-                    if (!value.empty()) {
-                        int startCol = col - value.length();
-                        new EnginePart(row, std::stoi(value), startCol);
-                        value.clear();
-                    }
-                }
-            } else {
-                if (!value.empty()) {
-                    int startCol = col - value.length();
-                    new EnginePart(row, std::stoi(value), startCol);
-                    value.clear();
+                    roundScore *= 2;
                 }
             }
         }
-        row++;
+        totalScore += roundScore;
     }
 
-    // add valid part values to list
-    int valueSum = 0;
-    for (auto& part: EnginePart::partList) {
-        part.getGearCoordinates(rawInput);
-    }
+    endTime = std::chrono::high_resolution_clock::now();
+    displayTimeTaken();
 
-    std::list<string> gearList;
-    int currentGearNeighbour;
-    for (const auto& currentGear: EnginePart::gearCoordinates) {
-        vector<string> gearDataSplit = splitLine(currentGear, '-');
-        string currentGearId = gearDataSplit[0];
-        currentGearNeighbour = std::stoi(gearDataSplit[1]);
-        Gear *currentGearObj = new Gear(std::stoi(currentGearId));
-
-        if (std::find(gearList.begin(), gearList.end(), currentGearId) == gearList.end()){
-            gearList.push_back(currentGearId);
-            currentGearObj->neighbours.push_back(currentGearNeighbour);
-        } else {
-            for (const auto& gear: Gear::gearList){
-                if (gear->id == std::stoi(currentGearId)){
-                    if (std::find(gear->neighbours.begin(), gear->neighbours.end(), currentGearNeighbour) == gear->neighbours.end()) {
-                        gear->neighbours.push_back(currentGearNeighbour);
-                    }
-
-                }
-            }
-        }
-    }
-
-    for (auto& gear: Gear::gearList){
-        if (gear->neighbours.size() == 2){
-            int currentSum = 1;
-            for (const auto& neighbour: gear->neighbours){
-                currentSum *= neighbour;
-            }
-            valueSum += currentSum;
-        }
-    }
-
-    cout << valueSum;
+    cout << totalScore;
     return 0;
 }
 
-vector<string> splitLine(const string& line, const char& delimiter){
+bool binarySearch(const std::vector<int>& sortedArray, int target) {
+    int left = 0;
+    int right = sortedArray.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        // Check if target is present at the middle
+        if (sortedArray[mid] == target) {
+            return true;
+        }
+
+            // If target greater, ignore the left half
+        else if (sortedArray[mid] < target) {
+            left = mid + 1;
+        }
+
+            // If target is smaller, ignore the right half
+        else {
+            right = mid - 1;
+        }
+    }
+
+    // If we reach here, then the target was not present
+    return false;
+}
+
+vector<int> quickSort(vector<int> numbers){
+    int listSize = (int)numbers.size();
+
+    vector<int> currentList;
+    if (listSize > 1){
+        int pivotIndex = listSize/2;
+        int pivot = numbers.at(pivotIndex);
+        vector<int> lessThanEqual;
+        vector<int> greaterThan;
+
+        for (int i=0; i<listSize; i++){
+            if (i != pivotIndex) {
+                if (numbers.at(i) <= pivot) {
+                    lessThanEqual.push_back(numbers.at(i));
+                } else {
+                    greaterThan.push_back(numbers.at(i));
+                }
+            }
+        }
+
+        lessThanEqual = quickSort(lessThanEqual);
+        greaterThan = quickSort(greaterThan);
+
+        currentList.insert(currentList.end(), lessThanEqual.begin(), lessThanEqual.end());
+        currentList.push_back(pivot);
+        currentList.insert(currentList.end(), greaterThan.begin(), greaterThan.end());
+    } else {
+        currentList = numbers;
+    }
+    return currentList;
+}
+
+vector<int> splitLineToInt(const string& line, const char& delimiter){
+    vector<int> splitString;
+
+    std::stringstream stream(line);
+
+    string currentLine;
+    while (stream.good()) {
+        std::getline(stream, currentLine, delimiter);
+        if (!currentLine.empty()) {
+            splitString.push_back(std::stoi(trim(currentLine)));
+        }
+    }
+
+    return splitString;
+}
+
+vector<string> splitLineToString(const string& line, const char& delimiter){
     vector<string> splitString;
 
     std::stringstream stream(line);
@@ -107,6 +153,20 @@ vector<string> splitLine(const string& line, const char& delimiter){
     }
 
     return splitString;
+}
+
+void displayTimeTaken() {
+    auto microDuration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+    auto nanoDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime);
+    auto milliDuration = std::chrono::duration_cast<std::chrono::milliseconds>(microDuration);
+    auto secondsDuration = std::chrono::duration_cast<std::chrono::seconds>(milliDuration);
+
+    //cout << sortType << " sort: " << listSize << " numbers" << endl;
+    //cout << "Total execution time (Nanoseconds): " << nanoDuration.count() << endl;
+    cout << "Total execution time (Microseconds): " << microDuration.count() << endl;
+    cout << "Total execution time (Milliseconds): " << milliDuration.count() << endl;
+    cout << "Total execution time (Seconds): " << secondsDuration.count() << endl;
+    cout << endl;
 }
 
 string trim(const string& str)

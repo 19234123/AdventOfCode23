@@ -8,7 +8,7 @@
 #include "Gear.h"
 #include <algorithm>
 #include <list>
-#include <chrono>
+#include "Card.h"
 
 using std::vector;
 using std::list;
@@ -16,51 +16,70 @@ using std::string;
 using std::cout;
 using std::endl;
 
-std::chrono::system_clock::time_point startTime;
-std::chrono::system_clock::time_point endTime;
 
 string filePath = R"(C:\Dev\Text_files\input.txt)";
 vector<string> readFile();
 vector<string> splitLineToString(const string& line, const char& delimiter);
 vector<int> splitLineToInt(const string& line, const char& delimiter);
 bool binarySearch(const std::vector<int>& sortedArray, int target);
-void displayTimeTaken();
 vector<int> quickSort(vector<int> numbers);
 string trim(const string& str);
+int getMaxIndex(const string& currentCard);
 
 
 int main() {
     vector<string> rawInput = readFile();
-    startTime = std::chrono::high_resolution_clock::now();
-
-    int totalScore = 0;
-    for (const auto& line: rawInput) {
-
-        vector<string> gameNumbers = splitLineToString(line, ':');
-        vector<string> numbersSplit = splitLineToString(gameNumbers.at(1), '|');
-
-        vector<int> inputNumbers = splitLineToInt(numbersSplit.at(0), ' ');
-        vector<int> validationNumbers = splitLineToInt(numbersSplit.at(1), ' ');
-        validationNumbers = quickSort(validationNumbers);
 
 
-        int roundScore = 0;
-        for (const auto& numberToCheck: inputNumbers){
-            if (binarySearch(validationNumbers, numberToCheck)){
-                if (roundScore == 0){
-                    roundScore = 1;
-                } else {
-                    roundScore *= 2;
-                }
-            }
-        }
-        totalScore += roundScore;
+    for (int i=0; i<rawInput.size(); i++) {
+        new Card(i+1, rawInput.at(i));
     }
 
-    endTime = std::chrono::high_resolution_clock::now();
-    displayTimeTaken();
+    int maxIndex;
+    for (int i=0; i<Card::allCards.size(); i++){
+        auto *currentCard = Card::allCards.at(i);
 
-    cout << totalScore;
+        maxIndex = 0;
+        for (const auto& numberToCheck: currentCard->inputNumbers){
+            if (binarySearch(currentCard->validationNumbers, numberToCheck)){
+                maxIndex++;
+            }
+        }
+
+        for (int j=i+1; j<=i+maxIndex; j++){
+            Card::cardsToProcess.push_back(Card::allCards.at(j));
+        }
+
+        Card::playedCards++;
+    }
+
+    int index;
+    while (!Card::cardsToProcess.empty()) {
+        int cardListSize = Card::cardsToProcess.size();
+        if (cardListSize % 10000 == 0) {
+            cout << cardListSize << endl;
+        }
+        auto *currentCard = Card::cardsToProcess.at(0);
+
+        maxIndex = 0;
+        for (const auto &numberToCheck: currentCard->inputNumbers) {
+            if (binarySearch(currentCard->validationNumbers, numberToCheck)) {
+                maxIndex++;
+            }
+        }
+
+        index = currentCard->cardNumber-1;
+        for (int j=index+1; j<=index+maxIndex; j++) {
+            Card::cardsToProcess.push_back(Card::allCards.at(j));
+        }
+
+        Card::cardsToProcess.erase(Card::cardsToProcess.begin());
+        Card::playedCards++;
+    }
+
+
+
+    cout << Card::playedCards;
     return 0;
 }
 
@@ -153,20 +172,6 @@ vector<string> splitLineToString(const string& line, const char& delimiter){
     }
 
     return splitString;
-}
-
-void displayTimeTaken() {
-    auto microDuration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-    auto nanoDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime);
-    auto milliDuration = std::chrono::duration_cast<std::chrono::milliseconds>(microDuration);
-    auto secondsDuration = std::chrono::duration_cast<std::chrono::seconds>(milliDuration);
-
-    //cout << sortType << " sort: " << listSize << " numbers" << endl;
-    //cout << "Total execution time (Nanoseconds): " << nanoDuration.count() << endl;
-    cout << "Total execution time (Microseconds): " << microDuration.count() << endl;
-    cout << "Total execution time (Milliseconds): " << milliDuration.count() << endl;
-    cout << "Total execution time (Seconds): " << secondsDuration.count() << endl;
-    cout << endl;
 }
 
 string trim(const string& str)

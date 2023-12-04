@@ -7,4 +7,6 @@ add_executable(AdventOfCode23 main.cpp
         EnginePart.cpp
         EnginePart.h
         Gear.cpp
-        Gear.h)
+        Gear.h
+        Card.cpp
+        Card.h)

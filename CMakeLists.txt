@@ -9,4 +9,8 @@ add_executable(AdventOfCode23 main.cpp
         Gear.cpp
         Gear.h
         Card.cpp
-        Card.h)
+        Card.h
+        Functions.h
+        Functions.cpp
+        ConversionMap.cpp
+        ConversionMap.h)

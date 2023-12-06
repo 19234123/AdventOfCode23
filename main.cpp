@@ -2,7 +2,6 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include <map>
 #include <algorithm>
 #include <list>
 #include <unordered_map>
@@ -20,9 +19,9 @@ string filePath = R"(C:\Dev\Text_files\input.txt)";
 int main() {
     vector<string> rawInput = readFile(filePath);
 
-    // Get seed numbers
-    vector<string> seedNumbers = splitLineToString(rawInput[0], ' ');
-    seedNumbers.erase(seedNumbers.begin());
+    // Get seed ranges
+    vector<string> seedRanges = splitLineToString(rawInput[0], ' ');
+    seedRanges.erase(seedRanges.begin());
     rawInput.erase(rawInput.begin(),rawInput.begin()+2);
 
     // Get input mapRanges
@@ -38,16 +37,6 @@ int main() {
     }
     inputRanges.push_back(currentRange);
 
-    /*
-     * seedtosoilmap
-     * soiltofertilizermap
-     * fertilizertowatermap
-     * watertolightmap
-     * lighttotemperaturemap
-     * temperaturetohumiditymap
-     * humiditytolocationmap
-     */
-
     // Setup range maps
     std::unordered_map<string, ConversionMap*> rangeMaps;
     for (const auto& range: inputRanges){
@@ -56,31 +45,38 @@ int main() {
         rangeMaps[mapName] = conversionMap;
     }
 
-    long long lowestLocation = LONG_LONG_MAX;
-    //Seed 79, soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82.
-    for (const auto& seedString: seedNumbers){
-        long long seed, soil, fertilizer, water, light, temperature, humidity, location;
-        seed = std::stoll(seedString);
+    long long maxLowestLocation = 400000000;
+    bool found = false;
+    for (long long location=0; location<maxLowestLocation; location++) {
+        long long seed, soil, fertilizer, water, light, temperature, humidity;
 
-        soil = rangeMaps["seedtosoilmap"]->getMapValue(seed);
-        fertilizer = rangeMaps["soiltofertilizermap"]->getMapValue(soil);
-        water = rangeMaps["fertilizertowatermap"]->getMapValue(fertilizer);
-        light = rangeMaps["watertolightmap"]->getMapValue(water);
-        temperature = rangeMaps["lighttotemperaturemap"]->getMapValue(light);
-        humidity = rangeMaps["temperaturetohumiditymap"]->getMapValue(temperature);
-        location = rangeMaps["humiditytolocationmap"]->getMapValue(humidity);
-
-        cout << "Seed " << seed << ", " << "soil " << soil << ", " << "fertilizer " << fertilizer << ", "
-             << "water " << water << ", " << "light " << light << ", " << "temperature " << temperature << ", "
-             << "humidity " << humidity << ", " << "location " << location << "." << endl;
-
-        if (location < lowestLocation){
-            lowestLocation = location;
+        if (location % 1000000 == 0){
+            cout << "Count(millions): " << location/1000000 << endl;
         }
 
-        //Seed 79, soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82.
+        humidity = rangeMaps["humiditytolocationmap"]->getReverseMapValue(location);
+        temperature = rangeMaps["temperaturetohumiditymap"]->getReverseMapValue(humidity);
+        light = rangeMaps["lighttotemperaturemap"]->getReverseMapValue(temperature);
+        water = rangeMaps["watertolightmap"]->getReverseMapValue(light);
+        fertilizer = rangeMaps["fertilizertowatermap"]->getReverseMapValue(water);
+        soil = rangeMaps["soiltofertilizermap"]->getReverseMapValue(fertilizer);
+        seed = rangeMaps["seedtosoilmap"]->getReverseMapValue(soil);
+
+        for (long long i=0; i<seedRanges.size(); i+=2){
+            long long minSeed = std::stoll(seedRanges[i]);
+            long long maxSeed = minSeed + std::stoll(seedRanges[i+1])-1;
+
+            if (seed>=minSeed && seed<=maxSeed){
+                cout << "Seed " << seed << " found at location " << location << endl;
+                found = true;
+                break;
+            }
+        }
+
+        if (found){
+            break;
+        }
     }
-    cout << "Lowest location: " << lowestLocation;
 
     return 0;
 }

@@ -11,9 +11,10 @@ ConversionMap::ConversionMap(vector<string> ranges) {
         long long minValue = currentRange[1];
         int range = (int) currentRange[2];
         mapRanges.push_back(new Range(mapValue, minValue, range));
+
+        // 50 98 2
     }
 }
-
 
 ConversionMap::Range::Range(long long int mapValue, long long int minValue, int range) {
     this->mapValueStart = mapValue;
@@ -23,26 +24,35 @@ ConversionMap::Range::Range(long long int mapValue, long long int minValue, int 
 }
 
 long long ConversionMap::Range::getMapValue(long long input) const {
-    long long distanceFromStart = input - minValue;
-    return mapValueStart + distanceFromStart;
+    return mapValueStart + (input-minValue);
+}
+
+long long ConversionMap::Range::getReverseMapValue(long long input) const {
+    return minValue + (input-mapValueStart);
+}
+
+long long ConversionMap::Range::keyInRange(long long int input) const {
+    return (input >= mapValueStart && input <= (mapValueStart+range));
 }
 
 long long ConversionMap::Range::valueInRange(long long int input) const {
     return (input >= minValue && input <= maxValue);
 }
 
-
-long long ConversionMap::getMapValue(long long int input) {
-    long long mapValue = -1;
+long long ConversionMap::getReverseMapValue(long long int input) {
     for (const auto range: mapRanges) {
-        if (range->valueInRange(input)){
-            mapValue = range->getMapValue(input);
+        if (range->keyInRange(input)){
+            return range->getReverseMapValue(input);
         }
     }
+    return input;
+}
 
-    if (mapValue == -1) {
-        return input;
-    } else {
-        return mapValue;
+long long ConversionMap::getMapValue(long long int input) {
+    for (const auto range: mapRanges) {
+        if (range->valueInRange(input)){
+            return range->getMapValue(input);
+        }
     }
+    return input;
 }

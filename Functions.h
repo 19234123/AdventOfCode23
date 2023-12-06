@@ -15,6 +15,9 @@ vector<long long> splitLineToLongLong(const string& line, const char& delimiter)
 string trim(const string& input);
 string strip(const string& input, const std::unordered_set<char>& charsToRemove);
 void setRange(const vector<string>& rangeData, std::map<long long, long long>& map);
+vector<long long> quickSort(vector<long long> numbers);
+bool binarySearch(const vector<long long>& sortedArray, long long target);
+
 
 
 #endif //ADVENTOFCODE23_FUNCTIONS_H

@@ -103,3 +103,63 @@ vector<string> readFile(const string& filePath){
     }
     return rawInput;
 }
+
+bool binarySearch(const std::vector<long long>& sortedArray, long long target) {
+    long long left = 0;
+    long long right = sortedArray.size() - 1;
+
+    while (left <= right) {
+        long long mid = left + (right - left) / 2;
+
+        // Check if target is present at the middle
+        if (sortedArray[mid] == target) {
+            return true;
+        }
+
+            // If target greater, ignore the left half
+        else if (sortedArray[mid] < target) {
+            left = mid + 1;
+        }
+
+            // If target is smaller, ignore the right half
+        else {
+            right = mid - 1;
+        }
+    }
+
+    // If we reach here, then the target was not present
+    return false;
+}
+
+
+vector<long long> quickSort(vector<long long> numbers){
+    long long listSize = numbers.size();
+
+    vector<long long> currentList;
+    if (listSize > 1){
+        long long pivotIndex = listSize/2;
+        long long pivot = numbers.at(pivotIndex);
+        vector<long long> lessThanEqual;
+        vector<long long> greaterThan;
+
+        for (long long i=0; i<listSize; i++){
+            if (i != pivotIndex) {
+                if (numbers.at(i) <= pivot) {
+                    lessThanEqual.push_back(numbers.at(i));
+                } else {
+                    greaterThan.push_back(numbers.at(i));
+                }
+            }
+        }
+
+        lessThanEqual = quickSort(lessThanEqual);
+        greaterThan = quickSort(greaterThan);
+
+        currentList.insert(currentList.end(), lessThanEqual.begin(), lessThanEqual.end());
+        currentList.push_back(pivot);
+        currentList.insert(currentList.end(), greaterThan.begin(), greaterThan.end());
+    } else {
+        currentList = numbers;
+    }
+    return currentList;
+}

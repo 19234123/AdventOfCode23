@@ -16,8 +16,10 @@ private:
         int range;
 
         Range(long long mapValue, long long int minValue, int range);
-        long long getMapValue(long long input) const;
-        long long valueInRange(long long input) const;
+        [[nodiscard]] long long getMapValue(long long input) const;
+        [[nodiscard]] long long valueInRange(long long input) const;
+        [[nodiscard]] long long getReverseMapValue(long long input) const;
+        [[nodiscard]] long long keyInRange(long long int input) const;
     };
 
 public:
@@ -25,6 +27,7 @@ public:
 
     explicit ConversionMap(vector<string> ranges);
     long long getMapValue(long long input);
+    long long getReverseMapValue(long long int input);
 };
 
 

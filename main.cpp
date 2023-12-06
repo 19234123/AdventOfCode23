@@ -1,12 +1,7 @@
 #include <iostream>
 #include <vector>
-#include <fstream>
-#include <string>
-#include <algorithm>
 #include <list>
-#include <unordered_map>
 #include "Functions.h"
-#include "ConversionMap.h"
 
 using std::vector;
 using std::list;
@@ -19,64 +14,41 @@ string filePath = R"(C:\Dev\Text_files\input.txt)";
 int main() {
     vector<string> rawInput = readFile(filePath);
 
-    // Get seed ranges
-    vector<string> seedRanges = splitLineToString(rawInput[0], ' ');
-    seedRanges.erase(seedRanges.begin());
-    rawInput.erase(rawInput.begin(),rawInput.begin()+2);
-
-    // Get input mapRanges
-    vector<vector<string>> inputRanges;
-    vector<string> currentRange;
-    for (const auto& line: rawInput){
-        if (!line.empty()) {
-            currentRange.push_back(line);
-        } else {
-            inputRanges.push_back(currentRange);
-            currentRange.clear();
-        }
-    }
-    inputRanges.push_back(currentRange);
-
-    // Setup range maps
-    std::unordered_map<string, ConversionMap*> rangeMaps;
-    for (const auto& range: inputRanges){
-        string mapName = strip(range[0], {' ', ':', '-'});
-        auto *conversionMap = new ConversionMap(range);
-        rangeMaps[mapName] = conversionMap;
+    // Setup round data list
+    vector<vector<int>> roundDataList;
+    auto dataSize = splitLineToString(rawInput[0], ' ').size();
+    for (int i=0; i<dataSize-1; i++) {
+        roundDataList.emplace_back();
     }
 
-    long long maxLowestLocation = 400000000;
-    bool found = false;
-    for (long long location=0; location<maxLowestLocation; location++) {
-        long long seed, soil, fertilizer, water, light, temperature, humidity;
-
-        if (location % 1000000 == 0){
-            cout << "Count(millions): " << location/1000000 << endl;
+    for (auto& line: rawInput) {
+        auto lineData = splitLineToString(line, ' ');
+        for (int i=1; i<lineData.size(); i++){
+            roundDataList[i-1].push_back(std::stoi(lineData[i]));
         }
+    }
 
-        humidity = rangeMaps["humiditytolocationmap"]->getReverseMapValue(location);
-        temperature = rangeMaps["temperaturetohumiditymap"]->getReverseMapValue(humidity);
-        light = rangeMaps["lighttotemperaturemap"]->getReverseMapValue(temperature);
-        water = rangeMaps["watertolightmap"]->getReverseMapValue(light);
-        fertilizer = rangeMaps["fertilizertowatermap"]->getReverseMapValue(water);
-        soil = rangeMaps["soiltofertilizermap"]->getReverseMapValue(fertilizer);
-        seed = rangeMaps["seedtosoilmap"]->getReverseMapValue(soil);
+    int totalCount = 1;
+    for (const auto& round: roundDataList) {
+        int maxTime = round[0];
+        int maxDistance = round[1];
+        int distanceTravelled;
+        int roundCount = 0;
 
-        for (long long i=0; i<seedRanges.size(); i+=2){
-            long long minSeed = std::stoll(seedRanges[i]);
-            long long maxSeed = minSeed + std::stoll(seedRanges[i+1])-1;
-
-            if (seed>=minSeed && seed<=maxSeed){
-                cout << "Seed " << seed << " found at location " << location << endl;
-                found = true;
-                break;
+        for (int secondsHeld=1; secondsHeld<=maxTime/2; secondsHeld++) {
+            distanceTravelled = secondsHeld * (maxTime-secondsHeld);
+            if (distanceTravelled > maxDistance) {
+                roundCount++;
             }
         }
 
-        if (found){
-            break;
+        if (maxTime % 2 != 0){
+            totalCount *= 2 * roundCount;
+        } else {
+            totalCount *= (2 * roundCount) - 1;
         }
     }
 
+    cout << totalCount;
     return 0;
 }

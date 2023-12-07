@@ -18,6 +18,4 @@ void setRange(const vector<string>& rangeData, std::map<long long, long long>& m
 vector<long long> quickSort(vector<long long> numbers);
 bool binarySearch(const vector<long long>& sortedArray, long long target);
 
-
-
 #endif //ADVENTOFCODE23_FUNCTIONS_H

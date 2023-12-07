@@ -6,20 +6,16 @@
 class Hand {
 private:
     void initialiseCardsAndOccurrences();
-    void processHighestValueArrangement();
-    void calculateHandValue();
-    void setHandType(const string& handType);
-    static int getCardValue(const char& card);
+    void calculateHandType();
+    static int getCardRank(const char& card);
 public:
-        string initialArrangement;
-        string sortedHand;
+        string handString;
         int bidAmount;
         string handType {};
-        string highestValueArrangement {};
         std::map<char, int> cardOccurrences {};
-        int handValue = 0;
 
         Hand(const string& initialArrangement, int bidAmount);
+        static Hand* getWeakestHand(const vector<Hand*>& handList);
 };
 
 

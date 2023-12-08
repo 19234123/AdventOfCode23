@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <unordered_set>
 #include "Functions.h"
-#include <omp.h>
-
 
 
 void setRange(const vector<string>& rangeData, std::map<long long, long long>& map) {
@@ -34,7 +32,7 @@ vector<long long> splitLineToLongLong(const string& line, const char& delimiter)
     while (stream.good()) {
         std::getline(stream, currentLine, delimiter);
         if (!currentLine.empty()) {
-            splitString.push_back(std::stoll(trim(currentLine)));
+            splitString.push_back(std::stoll(trimWhitespace(currentLine)));
         }
     }
 
@@ -50,7 +48,7 @@ vector<int> splitLineToInt(const string& line, const char& delimiter){
     while (stream.good()) {
         std::getline(stream, currentLine, delimiter);
         if (!currentLine.empty()) {
-            splitString.push_back(std::stoi(trim(currentLine)));
+            splitString.push_back(std::stoi(trimWhitespace(currentLine)));
         }
     }
 
@@ -66,14 +64,14 @@ vector<string> splitLineToString(const string& line, const char& delimiter){
     while (stream.good()) {
         std::getline(stream, currentLine, delimiter);
         if (!currentLine.empty()) {
-            splitString.push_back(trim(currentLine));
+            splitString.push_back(trimWhitespace(currentLine));
         }
     }
 
     return splitString;
 }
 
-string strip(const string& input, const std::unordered_set<char>& charsToRemove) {
+string stripCharacters(const string& input, const std::unordered_set<char>& charsToRemove) {
     string result = input;
     result.erase(std::remove_if(result.begin(), result.end(), [&charsToRemove](char c) {
         return charsToRemove.find(c) != charsToRemove.end();
@@ -81,7 +79,7 @@ string strip(const string& input, const std::unordered_set<char>& charsToRemove)
     return result;
 }
 
-string trim(const string& input) {
+string trimWhitespace(const string& input) {
     size_t first = input.find_first_not_of(' ');
     size_t last = input.find_last_not_of(' ');
     return input.substr(first, (last - first + 1));

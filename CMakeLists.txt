@@ -16,5 +16,4 @@ add_executable(AdventOfCode23 main.cpp
         ConversionMap.h
         Hand.cpp
         Hand.h
-        Graph.cpp
-        Graph.h)
+)

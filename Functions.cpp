@@ -7,6 +7,53 @@
 #include "Functions.h"
 
 
+long long greatestCommonMultiple(long long a, long long b) {
+    while (b != 0) {
+        long long temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+long long lowestCommonMultiple(long long a, long long b) {
+    return (a * b) / greatestCommonMultiple(a, b);
+}
+
+long long lcmOfSet(const vector<long long>& numbers) {
+    long long result = numbers[0];
+    for (int i=1; i<numbers.size(); i++) {
+        result = lowestCommonMultiple(result, numbers[i]);
+    }
+
+    return result;
+}
+
+int pathLength(const string& instructions, Node* currentNode) {
+    bool endReached = false;
+
+    int length = 0;
+    while (!endReached) {
+        for (const auto &direction: instructions) {
+            length++;
+            Node *nextNode;
+
+            if (direction == 'L') {
+                nextNode = currentNode->left;
+            } else {
+                nextNode = currentNode->right;
+            }
+            if (nextNode->name[2] == 'Z') {
+                endReached = true;
+                break;
+            } else {
+                currentNode = nextNode;
+            }
+        }
+    }
+    return length;
+}
+
 void setRange(const vector<string>& rangeData, std::map<long long, long long>& map) {
     vector<long long> currentRange;
     for (int i=1; i<rangeData.size(); i++) {

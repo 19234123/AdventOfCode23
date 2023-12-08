@@ -35,26 +35,11 @@ int main() {
         while (!handsToRank.empty()) {
             Hand* weakestHand = Hand::getWeakestHand(handsToRank);
             totalWinnings += (rank * weakestHand->bidAmount);
-
-            if (weakestHand->handString == "44454" || weakestHand->handString == "77772") {
-                cout << "Hand: " << weakestHand->handString << endl;
-                cout << "Type: " << weakestHand->handType << endl;
-                cout << "Rank: " << rank << endl << endl;
-            }
-
             rank++;
             handsToRank.erase(std::find(handsToRank.begin(), handsToRank.end(), weakestHand));
         }
-
-        for (const auto& hand: handsToRank) {
-            cout << "Hand: " << hand->handString << endl << "Type: " << hand->handType << endl << endl;
-        }
     }
 
-
-
-
     cout << "Total winnings: " << totalWinnings;
-
     return 0;
 }

@@ -1,9 +1,7 @@
 #include "Hand.h"
-#include <algorithm>
 
-
-Hand::Hand(const string &initialArrangement, int bidAmount) {
-    this->handString = initialArrangement;
+Hand::Hand(const string &handString, int bidAmount) {
+    this->handString = handString;
     this->bidAmount = bidAmount;
 
     initialiseCardsAndOccurrences();
@@ -19,17 +17,28 @@ void Hand::initialiseCardsAndOccurrences() {
 void Hand::calculateHandType() {
     int highestCardCount = 0;
     int secondHighestCardCount = 0;
+    int numberOfJokers = 0;
 
     for (const auto& pair: cardOccurrences) {
         int cardCount = pair.second;
 
-        if (cardCount >= highestCardCount) {
+        if (pair.first == 'J') {
+            numberOfJokers = cardCount;
+        } else if (cardCount >= highestCardCount) {
             secondHighestCardCount = highestCardCount;
             highestCardCount = cardCount;
         } else if (cardCount > secondHighestCardCount && cardCount < highestCardCount) {
             secondHighestCardCount = cardCount;
         }
     }
+
+    highestCardCount += numberOfJokers;
+    handType = cardCountToHandType(highestCardCount, secondHighestCardCount);
+}
+
+
+string Hand::cardCountToHandType(int highestCardCount, int secondHighestCardCount) {
+    string handType;
 
     if (highestCardCount == 5) {
         handType = "Five of a kind";
@@ -50,13 +59,15 @@ void Hand::calculateHandType() {
     } else {
         handType = "High card";
     }
+
+    return handType;
 }
 
 int Hand::getCardRank(const char &card) {
     std::map<char, int> cardValues = {
-            {'2', 2}, {'3', 3}, {'4', 4}, {'5', 5}, {'6', 6},
-            {'7', 7}, {'8', 8}, {'9', 9}, {'T', 10}, {'J', 11},
-            {'Q', 12}, {'K', 13}, {'A', 14}
+            {'J', 1}, {'2', 2}, {'3', 3}, {'4', 4}, {'5', 5}, {'6', 6},
+            {'7', 7}, {'8', 8}, {'9', 9}, {'T', 10}, {'Q', 11},
+            {'K', 12}, {'A', 13}
     };
     return cardValues[card];
 }
@@ -67,9 +78,6 @@ Hand *Hand::getWeakestHand(const vector<Hand*> &handList) {
         if (weakestHand) {
             string handString = hand->handString;
             string weakestString = weakestHand->handString;
-            if (handString == "77772" || handString == "44454" || weakestString == "77772" || weakestString == "44454"){
-                string z;
-            }
             for (int i = 0; i < handString.size(); i++) {
                 int handCardValue = getCardRank(handString[i]);
                 int weakestCardValue = getCardRank(weakestString[i]);

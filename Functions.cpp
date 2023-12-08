@@ -6,6 +6,15 @@
 #include <unordered_set>
 #include "Functions.h"
 
+vector<int> getIntegersFromString(string& string) {
+    vector<int> integers;
+    for (const auto& character: string) {
+        if (isdigit(character)) {
+            integers.push_back(character);
+        }
+    }
+    return integers;
+}
 
 long long greatestCommonMultiple(long long a, long long b) {
     while (b != 0) {

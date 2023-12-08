@@ -27,6 +27,7 @@ bool binarySearch(const vector<long long>& sortedArray, long long target);
 long long greatestCommonMultiple(long long a, long long b);
 long long lowestCommonMultiple(long long a, long long b);
 long long lcmOfSet(const vector<long long>& numbers);
+vector<int> getIntegersFromString(string& string);
 
 // Used for specific challenges
 int pathLength(const string& instructions, Node* currentNode);

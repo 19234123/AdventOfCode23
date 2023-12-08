@@ -9,11 +9,10 @@ using std::string;
 using std::vector;
 
 struct Node {
-    string value;
+    string name;
     Node* left;
     Node* right;
 };
-
 
 vector<string> readFile(const string& filePath);
 vector<string> splitLineToString(const string& line, const char& delimiter);

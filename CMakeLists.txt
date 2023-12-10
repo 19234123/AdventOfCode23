@@ -10,10 +10,15 @@ add_executable(AdventOfCode23 main.cpp
         Gear.h
         Card.cpp
         Card.h
-        Functions.h
-        Functions.cpp
         ConversionMap.cpp
         ConversionMap.h
         Hand.cpp
         Hand.h
 )
+
+
+# Add the path to the directory containing the library's header files
+include_directories(C:/Dev/Functions)
+
+# Link your executable with the library
+target_link_libraries(AdventOfCode23 PRIVATE C:/Dev/Functions/libFunctions.a)

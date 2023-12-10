@@ -14,11 +14,14 @@ add_executable(AdventOfCode23 main.cpp
         ConversionMap.h
         Hand.cpp
         Hand.h
+        AoC_Graph.cpp
+        AoC_Graph.h
 )
 
-
 # Add the path to the directory containing the library's header files
-include_directories(C:/Dev/Functions)
+include_directories(C:/Dev/Libraries/Functions)
+include_directories(C:/Dev/Libraries/GraphPathfinding)
 
 # Link your executable with the library
-target_link_libraries(AdventOfCode23 PRIVATE C:/Dev/Functions/libFunctions.a)
+target_link_libraries(AdventOfCode23 PRIVATE C:/Dev/Libraries/Functions/libFunctions.a)
+target_link_libraries(AdventOfCode23 PRIVATE C:/Dev/Libraries/GraphPathfinding/cmake-build-debug/libgraph.a)

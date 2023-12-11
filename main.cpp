@@ -1,71 +1,59 @@
-#include "AoC_Graph.h"
 #include "Functions.h"
+#include "Galaxy.h"
 
-string filePath = R"(C:\Dev\Text_files\input.txt)";
+string filePath = R"(C:\Dev\Text_files\input2.txt)";
+
 
 int main() {
     vector<string> rawInput = readFile(filePath);
 
-    auto graph = new AoC_Graph();
-
-
-    for (int row=0; row<rawInput.size(); row++) {
-        for (int column=0; column<rawInput[0].size(); column++) {
-            //if (rawInput[row][column] != '.') {
-                string currentSymbol = string{rawInput[row][column]};
-                graph->addNode(currentSymbol, column, row);
-            //}
+    // Duplicate columns as needed
+    vector<int> columnIndexes;
+    for (int column=0; column<rawInput.size(); column++) {
+        string currentCol;
+        for (auto & line : rawInput) {
+            currentCol += line[column];
+        }
+        if (currentCol.find_first_not_of(currentCol[0]) == string::npos) {
+            columnIndexes.push_back(column+columnIndexes.size()); // taking into account inserting at previous index
         }
     }
 
-    cout << "Nodes added" << endl;
-
-    graph->generateEdges();
-    //graph->displayGraphAsString();
-
-    cout << "Edges generated" << endl;
-
-
-    //graph->displayGraphAsString();
-
-    auto r = graph->getStartingNodes();
-
-    auto* t1 = new AoC_Graph::PathTraveller();
-    //auto* t2 = new AoC_Graph::PathTraveller();
-
-    t1->setStartNode(r[0]);
-    //t2->setStartNode(r[0]);
-
-//    t1->nextNode = r[1];
-//    t2->nextNode = r[2];
-
-    bool found = false;
-    while (!t1->endFound) {
-        t1->moveToNextNode();
-        //t2->moveToNextNode();
-        auto d = t1->currentNode->id;
-        //auto s = t2->currentNode->id;
-        //found = (t1->nextNode == t2->nextNode);
+    for (int i=0; i<rawInput.size(); i++) {
+        string& currentRow = rawInput[i];
+        for (const auto& index: columnIndexes) {
+            currentRow.insert(index, 1, '.');
+        }
     }
 
-    cout << "T1 Location: " << t1->currentNode->asciiStateString << " Steps: " << t1->visitedNodes.size()/2 << endl;
-    cout << "Steps++: " << t1->steps << endl;
-    //cout << "T2 Steps taken: " << t2->currentNode->asciiStateString << " Steps: " << t2->visitedNodes.size() << endl;
+    // Duplicate rows as needed
+    vector<string> gridLines;
+    for (const auto& line: rawInput) {
+        gridLines.push_back(line);
+        if (line.find_first_not_of(line[0]) == string::npos) {
+            gridLines.push_back(line);
+        }
+    }
 
-//    cout << "Nodes: " << graph->getNodeNames().size() << endl;
-//    while (!nodes.empty()) {
-//        auto node = nodes.front();
-//        auto results = graph->dijkstraPath("S", node);
-//        if (results.size() > maxLength) {
-//            maxLength = results.size();
-//            cout << "Current max length: " << maxLength << endl;
-//        }
-//
-//        if (count % 10 == 0) {
-//            cout << count << ", " << maxLength << endl;
-//        }
-//
-//        count++;
-//    }
+
+    for (int row=0; row<gridLines.size(); row++) {
+        for (int column=0; column<gridLines[0].size(); column++) {
+            if (gridLines[row][column] == '#') {
+                // x = col
+                // y = row
+                new Galaxy(column, row);
+            }
+        }
+    }
+
+
+    int totalLength = 0;
+    for (auto& node1: Galaxy::galaxyList) {
+        for (auto& node2: Galaxy::galaxyList) {
+            totalLength += node1->distanceBetween(node2);
+        }
+    }
+
+    cout << totalLength;
     return 0;
 }

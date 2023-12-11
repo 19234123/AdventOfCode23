@@ -6,17 +6,16 @@
 
 using std::vector;
 
-
 class Galaxy {
 public:
-    int x, y;
+    long long x, y;
     vector<Galaxy*> visited {};
 
     static vector<Galaxy*> galaxyList;
 
-    Galaxy(int x, int y);
-    int distanceBetween(Galaxy* otherGalaxy);
-    int manhattanDistance(int otherX, int otherY) const;
+    Galaxy(long long x, long long y);
+    long long distanceBetween(Galaxy* otherGalaxy);
+    [[nodiscard]] long long manhattanDistance(long long otherX, long long otherY) const;
 
 };
 

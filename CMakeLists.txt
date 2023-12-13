@@ -18,6 +18,8 @@ add_executable(AdventOfCode23 main.cpp
         AoC_Graph.h
         Galaxy.cpp
         Galaxy.h
+        SequenceProcessor.cpp
+        SequenceProcessor.h
 )
 
 # Add the path to the directory containing the library's header files

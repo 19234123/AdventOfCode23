@@ -20,6 +20,8 @@ add_executable(AdventOfCode23 main.cpp
         Galaxy.h
         SequenceProcessor.cpp
         SequenceProcessor.h
+        MirrorLandscape.cpp
+        MirrorLandscape.h
 )
 
 # Add the path to the directory containing the library's header files

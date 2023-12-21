@@ -1,24 +1,29 @@
 #include "Functions.h"
-#include "SequenceProcessor.h"
+#include "MirrorLandscape.h"
 
 string filePath = R"(C:\Dev\Text_files\input.txt)";
 
 int main() {
     vector<string> rawInput = readFile(filePath);
 
-    vector<SequenceProcessor*> sequencesToProcess;
+    vector<MirrorLandscape*> gridsToProcess;
+    vector<string> currentGrid;
     for (const auto& line: rawInput) {
-        vector<string> splitLine = splitLineToString(line, ' ');
-        vector<int> springsInSequence = splitLineToInt(splitLine[1], ',');
-
-        sequencesToProcess.push_back(new SequenceProcessor(splitLine[0], springsInSequence));
+        if (!line.empty()) {
+            currentGrid.push_back(line);
+        } else {
+            gridsToProcess.push_back(new MirrorLandscape(currentGrid));
+            currentGrid.clear();
+        }
     }
 
-    long totalArrangements = 0;
-    for (const auto& sequence: sequencesToProcess) {
-        totalArrangements += sequence->arrangements;
+
+    int total = 0;
+    for (auto& x: gridsToProcess) {
+        total += x->gridValue;
     }
 
-    cout << totalArrangements << endl;
+    cout << total;
+
  return 0;
 }

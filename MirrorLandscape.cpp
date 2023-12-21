@@ -73,13 +73,13 @@ void MirrorLandscape::calculateGridValue() {
         } else if (columnMatches > rowMatches) {
             gridValue = columnMirrorIndex;
         } else {
-            cout << "Fuck this fucking garbage treash " << endl;
+            cout << "AAA" << endl;
             if (rowMirrorIndex > columnMirrorIndex) {
                 gridValue = rowMirrorIndex * 100;
             } else {
                 gridValue = columnMirrorIndex;
             }
-            cout << "input is garbage as expected" << endl;
+            cout << "BBB" << endl;
         }
     } else {
         if (columnMirrorIndex != -1 || rowMirrorIndex != -1) {
@@ -97,7 +97,7 @@ void MirrorLandscape::calculateGridValue() {
 //                gridValue = columnMirrorIndex;
 //            }
         }
-        cout << "input is garbage and challenge is shit" << endl;
+        cout << "CCC" << endl;
     }
 }
 

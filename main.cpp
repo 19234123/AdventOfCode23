@@ -1,7 +1,7 @@
 #include "Functions.h"
 #include "MirrorLandscape.h"
 
-string filePath = R"(C:\Dev\Text_files\input.txt)";
+string filePath = R"(C:\Dev\Text_files\input2.txt)";
 
 int main() {
     vector<string> rawInput = readFile(filePath);
